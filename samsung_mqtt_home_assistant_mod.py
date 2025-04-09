@@ -309,9 +309,9 @@ def rx_nasa_handler(*nargs, **kwargs):
     return
 
   # only interpret values from the heatpump, ignore other controllers (especially for the E653 error on overriden zone)
-  if source[0]&0xF0 != 0x20:
-    log.info("ignoring packet from that source")
-    return
+  # if source[0]&0xF0 != 0x20:
+  #   log.info("ignoring packet from that source")
+  #   return
 
   # ignore read requests
   if payloadType != "notification" and payloadType != "write" and payloadType != "response":
