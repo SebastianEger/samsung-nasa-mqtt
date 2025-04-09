@@ -1,2 +1,2 @@
 #!/usr/bin/bash
-docker build -t nasa-mqtt:latest .
+docker build -t samsung-nasa-mqtt:latest .
