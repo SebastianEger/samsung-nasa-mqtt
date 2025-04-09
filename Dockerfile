@@ -6,4 +6,4 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . .
-ENTRYPOINT ["python", "./samsung_mqtt_home_assistant.py"]
+ENTRYPOINT ["python", "./samsung_mqtt_home_assistant_mod.py"]
