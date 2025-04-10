@@ -99,9 +99,9 @@ class PacketGateway:
               break
             
             # if packet grows to large, reset
-            if len(self.rx) > 500:
-              log.debug("buffer limit reached, resetting ...")
-              self.rx = 0
+            if len(self.rx) > 1000:
+              log.info("buffer limit reached, resetting ...")
+              self.rx = bytes()
               break
 
             log.debug("buffer length= " + hex(len(self.rx)))
