@@ -92,10 +92,16 @@ class PacketGateway:
           self.rx += content
           
           # when a packet is completely received (may have received
-          # more than one packet at a time, process them all)
+          # more than one packet at a time, process them all)            
           while True:
             # not enough data for a packet
             if len(self.rx) < 1+2:
+              break
+            
+            # if packet grows to large, reset
+            if len(self.rx) > 500:
+              log.debug("buffer limit reached, resetting ...")
+              self.rx = 0
               break
 
             log.debug("buffer length= " + hex(len(self.rx)))

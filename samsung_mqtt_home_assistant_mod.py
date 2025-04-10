@@ -309,8 +309,6 @@ def rx_nasa_handler(*nargs, **kwargs):
     return
 
   # only interpret values from the heatpump, ignore other controllers (especially for the E653 error on overriden zone)
-  # if source[0]&0xF0 != 0x20 and source[0]&0xF0 != 0x10:
-  # if source[0]&0xF0 != 0x20:
   if source[0]&0xF0 != 0x20 and source[0]&0xF0 != 0x10:
     log.info("ignoring packet from that source")
     return
@@ -356,7 +354,7 @@ def rx_nasa_handler(*nargs, **kwargs):
         mqtt_p_v = mqtt_published_vars[ds[1]]
         mqtt_p_v.publish(ds[4][0])
 
-      mqtt_client.publish('homeassistant/sensor/samsung_ehs/nasa_'+hex(ds[0]), payload=ds[2], retain=True)
+      # mqtt_client.publish('homeassistant/sensor/samsung_ehs/nasa_'+hex(ds[0]), payload=ds[2], retain=True)
     except:
       traceback.print_exc()
 
