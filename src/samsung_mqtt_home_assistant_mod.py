@@ -201,6 +201,7 @@ class DHWONOFFMQTTHandler(ONOFFMQTTHandler):
       intval=1
     if nasa_update(self.nasa_msgnum, intval):
       global pgw
+      log.info("Update nasa: " + str(intval))
       pgw.packet_tx(nasa_dhw_power(intval == 1))
 
 class COPMQTTHandler(MQTTHandler):
