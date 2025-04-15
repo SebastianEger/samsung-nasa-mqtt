@@ -202,7 +202,8 @@ class DHWONOFFMQTTHandler(ONOFFMQTTHandler):
     if nasa_update(self.nasa_msgnum, intval):
       global pgw
       log.info("Update nasa: " + str(intval))
-      pgw.packet_tx(nasa_dhw_power(intval == 1))
+      while not packet_tx(nasa_dhw_power(intval == 1)):
+        pass
 
 class COPMQTTHandler(MQTTHandler):
   def publish(self, valueInt):
@@ -388,25 +389,6 @@ def publisher_thread():
 
   while True:
     try:
-      # wait until pnp is done before requesting values
-      if nasa_last_publish + args.nasa_interval < time.time():
-        if nasa_pnp_ended or not args.nasa_pnp:
-          nasa_last_publish = time.time()
-          pgw.packet_tx(nasa_notify_error(0))
-          pgw.packet_tx(nasa_set_dhw_reference(0))
-          # publish zone 1 and 2 values toward nasa (periodic keep alive)
-          zone1_temp_name = nasa_message_name(0x423A) # don't use value for the EHS, but from sensors instead
-          if zone1_temp_name in nasa_state:
-            pgw.packet_tx(nasa_set_zone1_temperature(float(int(nasa_state[zone1_temp_name]))/10))
-          zone2_temp_name = nasa_message_name(0x42DA) # don't use value for the EHS, but from sensors instead
-          if zone2_temp_name in nasa_state:
-            pgw.packet_tx(nasa_set_zone2_temperature(float(int(nasa_state[zone2_temp_name]))/10))
-
-          for name in mqtt_published_vars:
-            handler = mqtt_published_vars[name]
-            if not nasa_message_name(handler.nasa_msgnum) in nasa_state and isinstance(handler, FSVWriteMQTTHandler):
-              handler.initread()
-              time.sleep(0.1)
       if args.nasa_pnp:
         # start PNP
         if not nasa_pnp_ended or (not nasa_pnp_ended and nasa_pnp_time + NASA_PNP_TIMEOUT < time.time()):
@@ -438,6 +420,7 @@ def publisher_thread():
 
     except:
       traceback.print_exc()
+    
     # handle communication timeout
     if last_nasa_rx + args.nasa_timeout < time.time():
       log.info("Communication lost!")
