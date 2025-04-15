@@ -197,7 +197,7 @@ class NasaPacketParser:
     if len(p) < 3+3+1+1+1+1:
       raise BaseException("Too short NASA packet")
 
-    log.info(tools.bin2hex(p))
+    # log.info(tools.bin2hex(p))
 
     src = p[0:3]
     dst = p[3:6]
@@ -262,7 +262,8 @@ class NasaPacketParser:
         desc = nasa_message_name(messageNumber)
       except:
         desc = "UNSPECIFIED"
-      log.info ("  "+hex(messageNumber)+" ("+desc+"): "+valuehex)
+      
+      # log.info ("  "+hex(messageNumber)+" ("+desc+"): "+valuehex)
       ds.append([messageNumber, desc, valuehex, value, valuedec])
       off += 2+s
 

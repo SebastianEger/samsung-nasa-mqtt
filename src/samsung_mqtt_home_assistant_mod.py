@@ -195,6 +195,7 @@ class ONOFFMQTTHandler(MQTTHandler):
 class DHWONOFFMQTTHandler(ONOFFMQTTHandler):
   def action(self, client, userdata, msg):
     mqttpayload = msg.payload.decode('utf-8')
+    log.info("Received DHW set: " + mqttpayload)
     intval=0
     if mqttpayload == "ON":
       intval=1
