@@ -103,8 +103,10 @@ class MQTTHandler():
     self.topic = topic
     self.nasa_msgnum = nasa_msgnum
     self.mqtt_client = mqtt_client
+    self.value_int = 0
 
   def publish(self, valueInt):
+    self.value_int = valueInt
     self.mqtt_client.publish(self.topic, valueInt)
 
   def action(self, client, userdata, msg):
@@ -173,13 +175,15 @@ class FSVLockUint8MQTTHandler(Uint8MQTTHandler):
 
 class IntDiv10MQTTHandler(MQTTHandler):
   def publish(self, valueInt):
+    self.value_int = valueInt
     self.mqtt_client.publish(self.topic, valueInt/10.0)
 
   def action(self, client, userdata, msg):
     intval = int(float(msg.payload.decode('utf-8'))*10)
-    if nasa_update(self.nasa_msgnum, intval):
+    while(self.value_int != intval):
       global pgw
       pgw.packet_tx(nasa_set_u16(self.nasa_msgnum, intval))
+      time.sleep(5)
       
 class IntDiv100MQTTHandler(MQTTHandler):
   def publish(self, valueInt):
@@ -187,6 +191,7 @@ class IntDiv100MQTTHandler(MQTTHandler):
 
 class ONOFFMQTTHandler(MQTTHandler):
   def publish(self, valueInt):
+    self.value_int = valueInt
     valueStr = "ON"
     if valueInt==0:
       valueStr="OFF"
@@ -195,15 +200,13 @@ class ONOFFMQTTHandler(MQTTHandler):
 class DHWONOFFMQTTHandler(ONOFFMQTTHandler):
   def action(self, client, userdata, msg):
     mqttpayload = msg.payload.decode('utf-8')
-    log.info("Received DHW set: " + mqttpayload)
     intval=0
     if mqttpayload == "ON":
       intval=1
-    if nasa_update(self.nasa_msgnum, intval):
+    while(self.value_int != intval):
       global pgw
-      log.info("Update nasa: " + str(intval))
-      while not packet_tx(nasa_dhw_power(intval == 1)):
-        pass
+      pgw.packet_tx(nasa_dhw_power(intval == 1))
+      time.sleep(5)
 
 class COPMQTTHandler(MQTTHandler):
   def publish(self, valueInt):

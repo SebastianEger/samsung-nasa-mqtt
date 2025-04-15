@@ -68,7 +68,7 @@ class PacketGateway:
         self.connect()
         while True:
           #fetch some data
-          ready, write, exc = select.select([self.gatewaysocket], [], [], 0.1)
+          ready, write, exc = select.select([self.gatewaysocket], [], [])
           if len(exc) > 0:
             raise BaseException("Data communication issue")
 
@@ -197,7 +197,7 @@ class NasaPacketParser:
     if len(p) < 3+3+1+1+1+1:
       raise BaseException("Too short NASA packet")
 
-    # log.info(tools.bin2hex(p))
+    log.info(tools.bin2hex(p))
 
     src = p[0:3]
     dst = p[3:6]
@@ -263,7 +263,7 @@ class NasaPacketParser:
       except:
         desc = "UNSPECIFIED"
       
-      # log.info ("  "+hex(messageNumber)+" ("+desc+"): "+valuehex)
+      log.info ("  "+hex(messageNumber)+" ("+desc+"): "+valuehex)
       ds.append([messageNumber, desc, valuehex, value, valuedec])
       off += 2+s
 
